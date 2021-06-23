@@ -45,12 +45,17 @@ luac.out
 *.hex
 
 # Specific to this project
-build/
-!tts/lib/**
-tts/lib/.DS_Store
-tts/lib/x86_64-osx/.DS_Store
 /.internal
 /build
-/products
-log.txt
+!camera-roll/lib/**
+camera-roll/lib/.DS_Store
+.externalToolBuilders
 .DS_Store
+Thumbs.db
+.lock-wscript
+*.pyc
+.project
+.project
+builtins
+log.txt
+/products
