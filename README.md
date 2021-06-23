@@ -4,7 +4,7 @@
 
 
 ## Usage
-Functions are exposed on the CameraRoll namespace.
+Functions are exposed in the CameraRoll namespace.
 
 See the [example script](./example/example.script) to get an idea.
 
