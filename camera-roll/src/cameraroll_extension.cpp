@@ -1,7 +1,7 @@
-// myextension.cpp
+// cameraroll_extension.cpp
 // Extension lib defines
-#define LIB_NAME "MyExtension"
-#define MODULE_NAME "myextension"
+#define LIB_NAME "CameraRoll"
+#define MODULE_NAME "cameraroll"
 
 // include the Defold SDK
 #include <dmsdk/sdk.h>
@@ -51,7 +51,7 @@ static void LuaInit(lua_State* L)
 
 dmExtension::Result AppInitializeMyExtension(dmExtension::AppParams* params)
 {
-    dmLogInfo("AppInitializeMyExtension\n");
+    dmLogInfo("AppInitializeCameraRollExtension\n");
     return dmExtension::RESULT_OK;
 }
 
@@ -65,19 +65,19 @@ dmExtension::Result InitializeMyExtension(dmExtension::Params* params)
 
 dmExtension::Result AppFinalizeMyExtension(dmExtension::AppParams* params)
 {
-    dmLogInfo("AppFinalizeMyExtension\n");
+    dmLogInfo("AppFinalizeCameraRollExtension\n");
     return dmExtension::RESULT_OK;
 }
 
 dmExtension::Result FinalizeMyExtension(dmExtension::Params* params)
 {
-    dmLogInfo("FinalizeMyExtension\n");
+    dmLogInfo("FinalizeCameraRollExtension\n");
     return dmExtension::RESULT_OK;
 }
 
 dmExtension::Result OnUpdateMyExtension(dmExtension::Params* params)
 {
-    dmLogInfo("OnUpdateMyExtension\n");
+    dmLogInfo("OnUpdateCameraRollExtension\n");
     return dmExtension::RESULT_OK;
 }
 
@@ -86,19 +86,19 @@ void OnEventMyExtension(dmExtension::Params* params, const dmExtension::Event* e
     switch(event->m_Event)
     {
         case dmExtension::EVENT_ID_ACTIVATEAPP:
-            dmLogInfo("OnEventMyExtension - EVENT_ID_ACTIVATEAPP\n");
+        dmLogInfo("OnEventCameraRollExtension - EVENT_ID_ACTIVATEAPP\n");
             break;
         case dmExtension::EVENT_ID_DEACTIVATEAPP:
-            dmLogInfo("OnEventMyExtension - EVENT_ID_DEACTIVATEAPP\n");
+        dmLogInfo("OnEventCameraRollExtension - EVENT_ID_DEACTIVATEAPP\n");
             break;
         case dmExtension::EVENT_ID_ICONIFYAPP:
-            dmLogInfo("OnEventMyExtension - EVENT_ID_ICONIFYAPP\n");
+        dmLogInfo("OnEventCameraRollExtension - EVENT_ID_ICONIFYAPP\n");
             break;
         case dmExtension::EVENT_ID_DEICONIFYAPP:
-            dmLogInfo("OnEventMyExtension - EVENT_ID_DEICONIFYAPP\n");
+        dmLogInfo("OnEventCameraRollExtension - EVENT_ID_DEICONIFYAPP\n");
             break;
         default:
-            dmLogWarning("OnEventMyExtension - Unknown event id\n");
+        dmLogWarning("OnEventCameraRollExtension - Unknown event id\n");
             break;
     }
 }
@@ -107,6 +107,6 @@ void OnEventMyExtension(dmExtension::Params* params, const dmExtension::Event* e
 //
 // DM_DECLARE_EXTENSION(symbol, name, app_init, app_final, init, update, on_event, final)
 
-// MyExtension is the C++ symbol that holds all relevant extension data.
+// CameraRoll is the C++ symbol that holds all relevant extension data.
 // It must match the name field in the `ext.manifest`
-DM_DECLARE_EXTENSION(MyExtension, LIB_NAME, AppInitializeMyExtension, AppFinalizeMyExtension, InitializeMyExtension, OnUpdateMyExtension, OnEventMyExtension, FinalizeMyExtension)
+DM_DECLARE_EXTENSION(CameraRoll, LIB_NAME, AppInitializeMyExtension, AppFinalizeMyExtension, InitializeMyExtension, OnUpdateMyExtension, OnEventMyExtension, FinalizeMyExtension)

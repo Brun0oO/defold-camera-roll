@@ -1,6 +1,6 @@
 function init(self)
 	local s = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
-	local reverse_s = myextension.reverse(s)
+	local reverse_s = cameraroll.reverse(s)
 	print(reverse_s) --> ZYXWVUTSRQPONMLKJIHGFEDCBAzyxwvutsrqponmlkjihgfedcba
 end
 
