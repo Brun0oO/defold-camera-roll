@@ -15,12 +15,12 @@ See the **main/screen.gui_script** file to get an idea.
 
 ## Step by step in pictures
 
-![step 1](./docs/camera-roll_step1.png)
-![step 2](./docs/camera-roll_step2.png)
-![step 3](./docs/camera-roll_step3.png)
-![step 4](./docs/camera-roll_step4.png)
-![step 5](./docs/camera-roll_step5.png)
-![step 6](./docs/camera-roll_step6.png)
+![step 1](./docs/camera-roll_step1.PNG)
+![step 2](./docs/camera-roll_step2.PNG)
+![step 3](./docs/camera-roll_step3.PNG)
+![step 4](./docs/camera-roll_step4.PNG)
+![step 5](./docs/camera-roll_step5.PNG)
+![step 6](./docs/camera-roll_step6.PNG)
 
 ## Contributing
 See [CONTRIBUTE.md](./CONTRIBUTE.md) for details about how to contribute to this project.
