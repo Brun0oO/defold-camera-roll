@@ -1,0 +1,26 @@
+function init(self)
+	self.t = 0
+	self.speed = 16 -- per second
+	self.enabled = 0
+	msg.post(".", hash("hide"))
+end
+
+function update(self, dt)
+	if self.enabled == 1 then
+		self.t = self.t + dt
+		local step = math.floor(self.t * self.speed)
+		local angle = math.pi /6 * step
+		local rot = vmath.quat_rotation_z(-angle)
+		go.set_rotation(rot)
+	end
+end
+
+function on_message(self, message_id, message, sender)
+	if message_id == hash("show") then
+		self.enabled = 1
+		msg.post(".", "enable")
+	elseif message_id == hash("hide") then
+		self.enabled = 0
+		msg.post(".", "disable")
+	end
+end

@@ -1,0 +1,168 @@
+local druid = require("druid.druid")
+local base64 = require("main.base64")
+local tool = require("main.tool")
+
+
+local function webview_set_position(self)
+	webview.set_position(self.webview_id, 0, 0, -1, 34)
+end
+
+local function on_window_callback(self, event, data)
+	if event == window.WINDOW_EVENT_RESIZED then
+		webview_set_position(self)
+	end
+	druid.on_window_callback(event, data)
+end
+
+-- update the defold texture
+local function set_picture(self, texture_id, image_data)
+	if self.texture_id then
+		gui.delete_texture(self.texture_id)
+		self.texture_id = nil
+	end
+
+	image_data = string.sub(image_data, 23) -- remove the 23 first characters (mime type declaration)...
+	local image_bin = base64.decode(image_data)
+	local img = image.load(image_bin)
+	if not img then
+		return
+	end
+
+	if gui.new_texture(texture_id, img.width, img.height, img.type, img.buffer) then
+		self.texture_id = texture_id
+		gui.set_texture(gui.get_node("picture"), texture_id)
+	end
+end
+
+-- communication with the webview
+-- In particular with the tracking of the eval results launched from the update function. 
+-- See CALLBACK_RESULT_EVAL_OK...
+local function webview_callback(self, webview_id, request_id, type, data)
+	-- print("webview_callback", webview_id, request_id)
+	if type == webview.CALLBACK_RESULT_URL_OK then
+		-- print("CALLBACK_RESULT_URL_OK")
+		self.initRequest = webview.eval(self.webview_id, string.format("init(%d,%d,%d,%d)", self.reducer_max, self.reducer_unsharpAmount, self.reducer_unsharpRadius, self.reducer_unsharpThreshold))
+	elseif type == webview.CALLBACK_RESULT_URL_ERROR then
+		print("CALLBACK_RESULT_URL_ERROR")
+		print("Failed to load url: " .. tostring(data["url"]))
+		print("Error: " .. tostring(data["error"]))
+
+	elseif type == webview.CALLBACK_RESULT_URL_LOADING then
+		-- print("CALLBACK_RESULT_URL_LOADING")
+		-- a page is loading
+		-- return false to prevent it from loading
+		-- return true or nil to continue loading the page
+		return true
+
+	elseif type == webview.CALLBACK_RESULT_EVAL_OK then
+		-- print("CALLBACK_RESULT_EVAL_OK")
+		-- print("Eval ok. Result: " .. tostring(data['result']))
+		if request_id == self.closeCheckRequest then
+			local data_string = data['result']
+			data_string = data_string:gsub("%(", "%{")
+			data_string = data_string:gsub("%)", "%}")
+			data_string = data_string:gsub("    ", "")
+			data_string = data_string:gsub("\n", "")
+
+			local result = tool.read_exp_list(data_string)
+
+			if result[1] == true or result[1] == 1 then
+				webview.destroy(self.webview_id)
+				self.webview_id = nil
+				self.picture_id = result[2]
+				self.picture_data = result[3]
+				if self.picture_data  == nil then
+					msg.post("spinner", hash("hide"))
+				else
+					self.updatePictureRequest = true
+				end
+			end    
+			self.closeCheckRequest = nil
+		elseif request_id == self.initRequest then
+			if data['result'] == "true" or data['result'] == "1" then
+				webview.set_visible(self.webview_id, 1)
+			end
+		end
+
+	elseif type == webview.CALLBACK_RESULT_EVAL_ERROR then
+		print("CALLBACK_RESULT_EVAL_ERROR")
+		print("Eval not ok. Request # " .. tostring(request_id))
+
+	else
+		print("Unknown callback type: " .. tostring(type))
+	end
+end
+
+-- open the webview
+local function button_change_picture_callback(self)
+	if not self.webview_id then
+		self.webview_id = webview.create(webview_callback)
+		webview_set_position(self)
+
+		msg.post("spinner", hash("show"))
+		local page_html = sys.load_resource("/assets/res/www/index.html")
+		webview.open_raw(self.webview_id, page_html, {hidden = true})
+	end
+
+
+end
+
+local function webview_available()
+	if not webview then
+		print("WebView is not available (only available on iOS and Android).")
+		return false
+	end
+	return true
+end
+
+
+function init(self)
+	if not webview_available() then return end
+
+	self.druid = druid.new(self)
+	window.set_listener(on_window_callback)
+
+	msg.post("@render:", "use_fixed_fit_projection", { near = -1, far = 1 })
+
+	self.druid:new_button("change_picture/button", button_change_picture_callback)
+
+	-- picture reducer parameters
+	self.reducer_max = 400;
+	self.reducer_unsharpAmount = 80;
+	self.reducer_unsharpRadius = 0.6;
+	self.reducer_unsharpThreshold = 2;
+	-- webview parameters
+	self.closeCheckRequest = nil;
+	self.initRequest = nil;
+	self.updatePictureRequest = false
+	self.picture_id = nil
+	self.picture_data = nil
+end
+
+function final(self)
+	self.druid:final()
+end
+
+function on_message(self, message_id, message, sender)
+	self.druid:on_message(message_id, message, sender)
+end
+
+-- we have to poll the webview in order to access some variables
+function update(self, dt)
+	self.druid:update(dt)
+	
+	if self.webview_id and not self.closeCheckRequest then
+		self.closeCheckRequest = webview.eval(self.webview_id, "getTuple()")
+	end
+	if self.updatePictureRequest then
+		set_picture(self, self.picture_id, self.picture_data)       
+		self.updatePictureRequest = false
+		self.picture_id = nil
+		self.picture_data = nil
+		msg.post("spinner", hash("hide"))
+	end
+end
+
+function on_input(self, action_id, action)
+	return self.druid:on_input(action_id, action)
+end
